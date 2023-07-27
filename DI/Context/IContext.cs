@@ -10,4 +10,5 @@ public interface IContext
 	IContainer ModelLayer { get; }
 	IContainer PresenterLayer { get; }
 	IContainer ViewLayer { get; }
+	void Flush();
 }

@@ -3,7 +3,7 @@ using NUnit.Framework;
 
 namespace DI.Context.Tests;
 
-public class StructureTests
+internal class StructureTests
 {
 	private IContext mContext;
 
