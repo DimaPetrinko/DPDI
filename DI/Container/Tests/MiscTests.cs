@@ -9,7 +9,7 @@ internal class MiscTests
 	{
 		var container = new Implementation.Container();
 		var someObject = new TestClass();
-		var id = new IdStruct();
+		var id = new IdStruct(0);
 
 		container.Add(someObject, id);
 
