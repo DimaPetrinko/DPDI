@@ -1,12 +1,14 @@
 ﻿namespace DI.Container.Implementation;
 
-internal class Container : IContainer
+internal class Container : IContainer, IContainerHeredity
 {
 	private readonly Dictionary<Type, object> mSingleBucket;
 	private readonly Dictionary<Type, Dictionary<object, object>> mRegularBucket;
+	private readonly IContainerHeredity[] mParentContainers;
 
-	public Container()
+	public Container(params IContainerHeredity[] parentContainers)
 	{
+		mParentContainers = parentContainers;
 		mSingleBucket = new Dictionary<Type, object>();
 		mRegularBucket = new Dictionary<Type, Dictionary<object, object>>();
 	}
@@ -43,16 +45,47 @@ internal class Container : IContainer
 
 	public T Get<T>() where T : class
 	{
+		return ((IContainerHeredity)this).Get<T>();
+	}
+
+	T IContainerHeredity.Get<T>(bool includeParents)
+	{
 		var type = typeof(T);
-		if (!mSingleBucket.TryGetValue(type, out var result))
+		if (mSingleBucket.TryGetValue(type, out var result))
 		{
-			throw new ContainerException(type, $"Could not find type {type} in this container");
+			return (T)result;
 		}
 
-		return (T)result;
+		if (!includeParents)
+		{
+			throw GetException();
+		}
+		foreach (var parent in mParentContainers)
+		{
+			try
+			{
+				return parent.Get<T>(false);
+			}
+			catch
+			{
+				// ignored
+			}
+		}
+
+		throw GetException();
+
+		ContainerException GetException()
+		{
+			return new ContainerException(type, $"Could not find type {type} in this container");
+		}
 	}
 
 	public T Get<T>(object id) where T : class
+	{
+		return ((IContainerHeredity)this).Get<T>(id);
+	}
+
+	T IContainerHeredity.Get<T>(object id, bool includeParents)
 	{
 		var type = typeof(T);
 
@@ -62,6 +95,27 @@ internal class Container : IContainer
 			return (T)result;
 		}
 
-		throw new ContainerException(type, id, $"Could not find id {id} for type {type} in this container");
+		if (!includeParents)
+		{
+			throw GetException();
+		}
+		foreach (var parent in mParentContainers)
+		{
+			try
+			{
+				return parent.Get<T>(id, false);
+			}
+			catch
+			{
+				// ignored
+			}
+		}
+
+		throw GetException();
+
+		ContainerException GetException()
+		{
+			return new ContainerException(type, id, $"Could not find id {id} for type {type} in this container");
+		}
 	}
 }
