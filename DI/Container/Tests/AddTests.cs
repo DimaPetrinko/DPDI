@@ -69,4 +69,16 @@ internal class AddTests
 
 		var e = Assert.Throws<ContainerException>(() => mContainer.Add(someObject2, id));
 	}
+
+	[Test]
+	public void Add_Throws_IfSameTypeAddedAsSingle()
+	{
+		var container = new Implementation.Container();
+		var someObject = new TestClass();
+		var id = new IdStruct(0);
+
+		container.Add(someObject);
+
+		Assert.Throws<ContainerException>(() => container.Add(someObject, id));
+	}
 }

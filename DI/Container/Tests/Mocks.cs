@@ -27,6 +27,16 @@ internal class TestClass2 : ITestClass
 	}
 }
 
+internal class DisposableClass : IDisposable
+{
+	public bool IsDisposed { get; private set; }
+
+	public void Dispose()
+	{
+		IsDisposed = true;
+	}
+}
+
 internal readonly struct IdStruct
 {
 	public readonly int Id;

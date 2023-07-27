@@ -16,14 +16,21 @@ internal class Container : IContainer, IContainerHeredity
 	public void Add<T>(T obj, object id) where T : class
 	{
 		var type = typeof(T);
+
+		var alreadyHasSingle = mSingleBucket.ContainsKey(type);
+		var alreadyHasInParent = mParentContainers.Cast<IContainer>().Any(p => p.Has<T>(id));
+		if (alreadyHasSingle || alreadyHasInParent)
+		{
+			throw new ContainerException(type, id, $"Instance of type {type} already exists as single in this container");
+		}
+
 		if (!mRegularBucket.TryGetValue(type, out var innerBucket))
 		{
 			innerBucket = new Dictionary<object, object>();
 			mRegularBucket.Add(type, innerBucket);
 		}
 
-		var alreadyContains = innerBucket.ContainsKey(id);
-		if (alreadyContains)
+		if (innerBucket.ContainsKey(id))
 		{
 			throw new ContainerException(type, id, $"Instance with id {id} for type {type} already exists in this container");
 		}
@@ -34,10 +41,18 @@ internal class Container : IContainer, IContainerHeredity
 	public void Add<T>(T obj) where T : class
 	{
 		var type = typeof(T);
+
+		var alreadyHasRegular = mRegularBucket.ContainsKey(type);
+		var alreadyHasInParent = mParentContainers.Cast<IContainer>().Any(p => p.Has<T>());
+		if (alreadyHasRegular || alreadyHasInParent)
+		{
+			throw new ContainerException(type, $"Instance of type {type} already exists in this container");
+		}
+
 		var alreadyContains = mSingleBucket.ContainsKey(type);
 		if (alreadyContains)
 		{
-			throw new ContainerException(type, $"Type {type} already exists in this container");
+			throw new ContainerException(type, $"Instance of type {type} already exists in this container");
 		}
 
 		mSingleBucket.Add(type, obj);
@@ -117,5 +132,50 @@ internal class Container : IContainer, IContainerHeredity
 		{
 			return new ContainerException(type, id, $"Could not find id {id} for type {type} in this container");
 		}
+	}
+
+	public bool Has<T>() where T : class
+	{
+		var type = typeof(T);
+		return mSingleBucket.ContainsKey(type) || mRegularBucket.ContainsKey(type);
+	}
+
+	public bool Has<T>(object id) where T : class
+	{
+		var type = typeof(T);
+		return mSingleBucket.ContainsKey(type)
+		       || mRegularBucket.TryGetValue(type, out var innerBucket)
+		       && innerBucket.ContainsKey(id);
+	}
+
+	public void Flush()
+	{
+		FlushSingle();
+		FlushRegular();
+	}
+
+	private void FlushSingle()
+	{
+		foreach (var disposable in mSingleBucket.Values.Where(o => o is IDisposable).Cast<IDisposable>())
+		{
+			disposable.Dispose();
+		}
+
+		mSingleBucket.Clear();
+	}
+
+	private void FlushRegular()
+	{
+		foreach (var innerBucket in mRegularBucket.Values)
+		{
+			foreach (var disposable in innerBucket.Values.Where(o => o is IDisposable).Cast<IDisposable>())
+			{
+				disposable.Dispose();
+			}
+
+			innerBucket.Clear();
+		}
+
+		mRegularBucket.Clear();
 	}
 }

@@ -1,6 +1,6 @@
 ﻿using NUnit.Framework;
 
-namespace DI.Container.Tests;
+namespace DI.Container.Tests.Heredity;
 
 internal class HeredityGetTests
 {
