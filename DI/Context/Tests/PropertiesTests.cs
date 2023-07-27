@@ -2,7 +2,7 @@
 
 namespace DI.Context.Tests;
 
-public class PropertiesTests
+internal class PropertiesTests
 {
 	private IContext mContext;
 

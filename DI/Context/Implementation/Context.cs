@@ -34,4 +34,14 @@ internal class Context : IContext
 			(IContainerHeredity)StaticDataLayer,
 			(IContainerHeredity)BaseLayer);
 	}
+
+	public void Flush()
+	{
+		BaseLayer.Flush();
+		StaticDataLayer.Flush();
+		DynamicDataLayer.Flush();
+		ModelLayer.Flush();
+		PresenterLayer.Flush();
+		ViewLayer.Flush();
+	}
 }
