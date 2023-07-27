@@ -13,15 +13,45 @@ internal class Container : IContainer, IContainerHeredity
 		mRegularBucket = new Dictionary<Type, Dictionary<object, object>>();
 	}
 
+	public void Add<T>(T obj) where T : class
+	{
+		var type = typeof(T);
+
+		var alreadyHasRegular = mRegularBucket.ContainsKey(type);
+		var alreadyHasInParent = mParentContainers.Cast<IContainer>().Any(p => p.Has<T>());
+		if (alreadyHasRegular)
+		{
+			throw new ContainerException(type, $"Instance of type {type} already exists in this container");
+		}
+
+		if (alreadyHasInParent)
+		{
+			throw new ContainerException(type, $"Instance of type {type} already exists in parent container");
+		}
+
+		var alreadyContains = mSingleBucket.ContainsKey(type);
+		if (alreadyContains)
+		{
+			throw new ContainerException(type, $"Instance of type {type} already exists in this container");
+		}
+
+		mSingleBucket.Add(type, obj);
+	}
+
 	public void Add<T>(T obj, object id) where T : class
 	{
 		var type = typeof(T);
 
 		var alreadyHasSingle = mSingleBucket.ContainsKey(type);
 		var alreadyHasInParent = mParentContainers.Cast<IContainer>().Any(p => p.Has<T>(id));
-		if (alreadyHasSingle || alreadyHasInParent)
+		if (alreadyHasSingle)
 		{
 			throw new ContainerException(type, id, $"Instance of type {type} already exists as single in this container");
+		}
+
+		if (alreadyHasInParent)
+		{
+			throw new ContainerException(type, id, $"Instance with id {id} of type {type} already exists as single in parent container");
 		}
 
 		if (!mRegularBucket.TryGetValue(type, out var innerBucket))
@@ -32,30 +62,10 @@ internal class Container : IContainer, IContainerHeredity
 
 		if (innerBucket.ContainsKey(id))
 		{
-			throw new ContainerException(type, id, $"Instance with id {id} for type {type} already exists in this container");
+			throw new ContainerException(type, id, $"Instance with id {id} of type {type} already exists in this container");
 		}
 
 		innerBucket.Add(id, obj);
-	}
-
-	public void Add<T>(T obj) where T : class
-	{
-		var type = typeof(T);
-
-		var alreadyHasRegular = mRegularBucket.ContainsKey(type);
-		var alreadyHasInParent = mParentContainers.Cast<IContainer>().Any(p => p.Has<T>());
-		if (alreadyHasRegular || alreadyHasInParent)
-		{
-			throw new ContainerException(type, $"Instance of type {type} already exists in this container");
-		}
-
-		var alreadyContains = mSingleBucket.ContainsKey(type);
-		if (alreadyContains)
-		{
-			throw new ContainerException(type, $"Instance of type {type} already exists in this container");
-		}
-
-		mSingleBucket.Add(type, obj);
 	}
 
 	public T Get<T>() where T : class
