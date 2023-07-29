@@ -18,7 +18,7 @@ internal class Container : IContainer, IContainerHeredity
 		var type = typeof(T);
 
 		var alreadyHasSingle = mSingleBucket.ContainsKey(type);
-		var alreadyHasInParent = mParentContainers.Cast<IContainer>().Any(p => p.Has<T>(id));
+		var alreadyHasInParent = mParentContainers.Select(h => h.AsBase()).Any(p => p.Has<T>(id));
 		if (alreadyHasSingle || alreadyHasInParent)
 		{
 			throw new ContainerException(type, id, $"Instance of type {type} already exists as single in this container");
@@ -43,7 +43,7 @@ internal class Container : IContainer, IContainerHeredity
 		var type = typeof(T);
 
 		var alreadyHasRegular = mRegularBucket.ContainsKey(type);
-		var alreadyHasInParent = mParentContainers.Cast<IContainer>().Any(p => p.Has<T>());
+		var alreadyHasInParent = mParentContainers.Select(h => h.AsBase()).Any(p => p.Has<T>());
 		if (alreadyHasRegular || alreadyHasInParent)
 		{
 			throw new ContainerException(type, $"Instance of type {type} already exists in this container");
@@ -60,7 +60,7 @@ internal class Container : IContainer, IContainerHeredity
 
 	public T Get<T>() where T : class
 	{
-		return ((IContainerHeredity)this).Get<T>();
+		return this.AsHeredity().Get<T>();
 	}
 
 	T IContainerHeredity.Get<T>(bool includeParents)
@@ -97,7 +97,7 @@ internal class Container : IContainer, IContainerHeredity
 
 	public T Get<T>(object id) where T : class
 	{
-		return ((IContainerHeredity)this).Get<T>(id);
+		return this.AsHeredity().Get<T>(id);
 	}
 
 	T IContainerHeredity.Get<T>(object id, bool includeParents)

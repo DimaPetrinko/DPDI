@@ -13,9 +13,9 @@ internal class HeredityGetTests
 	public void SetUp()
 	{
 		mGrandParentContainer = new Implementation.Container();
-		mParentContainer = new Implementation.Container((IContainerHeredity)mGrandParentContainer);
+		mParentContainer = new Implementation.Container(mGrandParentContainer.AsHeredity());
 		mParentContainer2 = new Implementation.Container();
-		mContainer = new Implementation.Container((IContainerHeredity)mParentContainer, (IContainerHeredity)mParentContainer2);
+		mContainer = new Implementation.Container(mParentContainer.AsHeredity(), mParentContainer2.AsHeredity());
 	}
 
 	[Test]

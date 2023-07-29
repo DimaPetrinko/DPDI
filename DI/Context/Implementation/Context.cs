@@ -3,8 +3,10 @@ using ContainerImpl = DI.Container.Implementation.Container;
 
 namespace DI.Context.Implementation;
 
-internal class Context : IContext
+internal class Context : IContext, IContextHeredity
 {
+	private readonly List<IContextHeredity> mChildren;
+
 	public IContainer BaseLayer { get; }
 	public IContainer StaticDataLayer { get; }
 	public IContainer DynamicDataLayer { get; }
@@ -12,30 +14,61 @@ internal class Context : IContext
 	public IContainer PresenterLayer { get; }
 	public IContainer ViewLayer { get; }
 
-	public Context()
+	public IContextHeredity? ParentContext { get; }
+	public IEnumerable<IContextHeredity> Children => mChildren;
+
+	public Context(IContextHeredity? parentContext = null)
 	{
+		ParentContext = parentContext;
+		mChildren = new List<IContextHeredity>();
+
 		BaseLayer = new ContainerImpl();
 
-		StaticDataLayer = new ContainerImpl((IContainerHeredity)BaseLayer);
-		DynamicDataLayer = new ContainerImpl((IContainerHeredity)BaseLayer);
+		StaticDataLayer = new ContainerImpl(
+			BaseLayer.AsHeredity());
+		DynamicDataLayer = new ContainerImpl(
+			BaseLayer.AsHeredity());
 
 		ModelLayer = new ContainerImpl(
-			(IContainerHeredity)DynamicDataLayer,
-			(IContainerHeredity)StaticDataLayer,
-			(IContainerHeredity)BaseLayer);
+			DynamicDataLayer.AsHeredity(),
+			StaticDataLayer.AsHeredity(),
+			BaseLayer.AsHeredity());
 		ViewLayer = new ContainerImpl(
-			(IContainerHeredity)StaticDataLayer,
-			(IContainerHeredity)BaseLayer);
+			StaticDataLayer.AsHeredity(),
+			BaseLayer.AsHeredity());
 
 		PresenterLayer = new ContainerImpl(
-			(IContainerHeredity)ModelLayer,
-			(IContainerHeredity)ViewLayer,
-			(IContainerHeredity)DynamicDataLayer,
-			(IContainerHeredity)StaticDataLayer,
-			(IContainerHeredity)BaseLayer);
+			ModelLayer.AsHeredity(),
+			ViewLayer.AsHeredity(),
+			DynamicDataLayer.AsHeredity(),
+			StaticDataLayer.AsHeredity(),
+			BaseLayer.AsHeredity());
+	}
+
+	public IContextHeredity AddNewChildContext()
+	{
+		var newContext = new Context(this);
+		mChildren.Add(newContext);
+		return newContext;
 	}
 
 	public void Flush()
+	{
+		Flush(true);
+	}
+
+	public void Flush(bool recursive)
+	{
+		FlushAllLayers();
+
+		foreach (var child in mChildren)
+		{
+			child.Flush(true);
+		}
+		mChildren.Clear();
+	}
+
+	private void FlushAllLayers()
 	{
 		BaseLayer.Flush();
 		StaticDataLayer.Flush();
