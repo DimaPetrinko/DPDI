@@ -1,6 +1,6 @@
 ﻿namespace DISystem.Container;
 
-public static class ContainerExtensions
+internal static class ContainerExtensions
 {
 	public static IContainerHeredity AsHeredity(this IContainer container)
 	{

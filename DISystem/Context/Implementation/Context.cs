@@ -61,6 +61,8 @@ internal class Context : IContext, IContextHeredity
 	{
 		FlushAllLayers();
 
+		if (!recursive) return;
+
 		foreach (var child in mChildren)
 		{
 			child.Flush(true);
