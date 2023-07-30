@@ -1,6 +1,6 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DI", "DI\DI.csproj", "{E6BA53D1-5479-4AB7-B9A9-9A7A431C08E9}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DPDI", "DPDI\DPDI.csproj", "{E6BA53D1-5479-4AB7-B9A9-9A7A431C08E9}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
