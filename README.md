@@ -6,17 +6,17 @@ A simple DI system.
 
 This is the main access point for the system. It has a single property RootContext of type [IContext](README.md#Context).
 
-For more info see [class diagram](README.md#Class%20Diagram).
+For more info see [class diagram](README.md#Class-Diagram).
 
 ## Context
 
 A context can be viewed as a stage of the app. It has several [containers](README.md#Container) for different purposes. Here - they are called layers. Hence, each stage of the app holds several layers of functionality. The context establishes the relations between layers.
 
-A context can have children, thus, creating a tree-like structure. This is achieved by the [IContextHeredity](README.md#Class%20Diagram) interface. All contexts implements heredity. Is possible to reimplement the context with having only the base functionality. Also, there are a couple of extension methods in ```DPDI.Context.ContextExtensions``` for easily casting the heredity context to base context
+A context can have children, thus, creating a tree-like structure. This is achieved by the [IContextHeredity](README.md#Class-Diagram) interface. All contexts implements heredity. Is possible to reimplement the context with having only the base functionality. Also, there are a couple of extension methods in ```DPDI.Context.ContextExtensions``` for easily casting the heredity context to base context
 
 The Flush method clears the layers and propagates the flush to all its children.
 
-For more info see [class diagram](README.md#Class%20Diagram).
+For more info see [class diagram](README.md#Class-Diagram).
 
 ## Container
 
@@ -46,7 +46,7 @@ Reular mode can sotore multiple instances of a type as well as multiple types. T
 
 ```Has``` method will return a bool, indicating whether an instance of the type with the provided id is stored in this container only.
 
-For more info see [class diagram](README.md#Class%20Diagram).
+For more info see [class diagram](README.md#Class-Diagram).
 
 ## Class diagram
 
