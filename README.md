@@ -38,7 +38,7 @@ Single mode stores the object as a single instance. It does so using the Type as
 
 ### Regular mode
 
-Reular mode can sotore multiple instances of a type as well as multiple types. To achieve this you must provide some sort of an id. The id can be any value or reference type. The regular mode utilizes buckets for each type, so the ids can be the same, provided that the types are different.
+Regular mode can store multiple instances of a type as well as multiple types. To achieve this you must provide some sort of an id. The id can be any value or reference type. The regular mode utilizes buckets for each type, so the ids can be the same, provided that the types are different.
 
 ```Add``` method, similarly to the single mode will throw ```ContainerException``` if an instance of the same type, as well as an instance with the same type and id is already stored in this container (either as a single or as a regular) or in any of the parent containers.
 
