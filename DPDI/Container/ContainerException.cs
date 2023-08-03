@@ -1,4 +1,6 @@
-﻿namespace DPDI.Container;
+﻿using System;
+
+namespace DPDI.Container;
 
 public class ContainerException : Exception
 {

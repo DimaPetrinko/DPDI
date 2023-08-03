@@ -1,4 +1,6 @@
-﻿namespace DPDI.Context;
+﻿using System.Collections.Generic;
+
+namespace DPDI.Context;
 
 public interface IContextHeredity
 {

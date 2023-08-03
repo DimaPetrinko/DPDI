@@ -1,4 +1,6 @@
-﻿namespace DPDI.Context.Tests;
+﻿using System;
+
+namespace DPDI.Context.Tests;
 
 internal interface ITestClass
 {
